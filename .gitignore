@@ -1,0 +1,7 @@
+/.env
+/docker-compose.yml
+/DockerFile
+/logs.log
+/pixel_bot.logs
+/test.py
+/test2.py

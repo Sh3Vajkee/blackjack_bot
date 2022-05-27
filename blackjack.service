@@ -1,0 +1,15 @@
+[Unit]
+Description=BlackJack Bot
+After=network.target
+
+[Service]
+User=root
+Group=root
+Type=simple
+WorkingDirectory=/root/blackjack_bot
+ExecStart=/bin/python3 /root/blackjack_bot/__main__.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
