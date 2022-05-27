@@ -1,3 +1,4 @@
+import logging
 from textwrap import dedent
 
 from aiogram import Dispatcher, types
@@ -25,6 +26,7 @@ async def start_cmd(m: types.Message):
         if not plr:
             await ssn.merge(Player(plr_id=m.from_user.id))
             await ssn.commit()
+            logging.info(f"New Player with ID: {m.from_user.id}")
         await ssn.close()
 
 
