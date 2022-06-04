@@ -11,11 +11,13 @@ from sqlalchemy import select
 @rate_limit(1)
 async def start_cmd(m: types.Message):
     text = """
-    👋Добро пожаловать в <b>BlackJackBot</b>!
+    👋 Добро пожаловать в <b>BlackJackBot</b>!
     
     /rules - 📋 правила
     /top - 🏆 топ игроков
     /history - 👤 профиль
+
+    ℹ️ <i>По всем вопросам писать @Tshque</i>
     """
     await m.answer(dedent(text), reply_markup=new_game_kb)
 
@@ -32,8 +34,18 @@ async def start_cmd(m: types.Message):
 
 @rate_limit(1)
 async def rules_cmd(m: types.Message):
+    db = m.bot.get("db")
+
+    async with db() as ssn:
+        plr = await ssn.get(Player, m.from_user.id)
+        if not plr:
+            await ssn.merge(Player(plr_id=m.from_user.id))
+            await ssn.commit()
+            logging.info(f"New Player with ID: {m.from_user.id}")
+        await ssn.close()
+
     text = """
-    📋Правила игры в BlackJack
+    📋 Правила игры в BlackJack
 
     В игре небходимо набрать <b>21 очко</b>.
 
@@ -60,6 +72,9 @@ async def rules_cmd(m: types.Message):
         - <u>1 очко</u> - когда после добора туза (А) игрок получает перебор
     
     ♦️ Приступить к игре - нажмите   /start
+
+
+    ℹ️ <i>По всем вопросам писать @Tshque</i>
     """
     await m.answer(dedent(text))
 
@@ -73,6 +88,7 @@ async def top_cmd(m: types.Message):
         if not plr:
             await ssn.merge(Player(plr_id=m.from_user.id))
             await ssn.commit()
+            logging.info(f"New Player with ID: {m.from_user.id}")
 
         top_q = await ssn.execute(select(Player).order_by(Player.rating.desc()))
         top = top_q.scalars().all()
@@ -97,7 +113,7 @@ async def top_cmd(m: types.Message):
 
     txt = "🏆 <b>Топ игроков:</b>\n\n" + \
         "\n".join(
-            players) + f"\n\n<b>.  .  .</b>\n\n{plr_medal} {plr_place}. Ваш рейтинг - <b>{plr_points}</b>"
+            players) + f"\n\n<b>. . .</b>\n\n{plr_medal} {plr_place}. Ваш рейтинг - <b>{plr_points}</b>\n\n\nℹ️ <i>По всем вопросам писать @Tshque</i>"
 
     await m.answer(txt, reply_markup=new_game_kb)
 
@@ -111,6 +127,7 @@ async def games_history(m: types.Message):
         if not plr:
             await ssn.merge(Player(plr_id=m.from_user.id))
             await ssn.commit()
+            logging.info(f"New Player with ID: {m.from_user.id}")
             plr_rating = 1000
             plr_total_games = 0
 
@@ -149,7 +166,8 @@ async def games_history(m: types.Message):
     else:
         txt = "🥺 Вы еще не сыграли ниодной игры"
 
-    await m.answer(header_txt + txt, reply_markup=new_game_kb)
+    await m.answer(header_txt + txt + "\n\n\nℹ️ <i>По всем вопросам писать @Tshque</i>",
+                   reply_markup=new_game_kb)
 
 
 def start_handlers(dp: Dispatcher):

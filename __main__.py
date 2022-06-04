@@ -4,13 +4,16 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import BotCommand
-from aiogram.types.bot_command_scope import BotCommandScopeAllPrivateChats
+from aiogram.types.bot_command_scope import (BotCommandScopeAllPrivateChats,
+                                             BotCommandScopeChat)
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from config_loader import Config, load_config
 from db.base import Base
+from handlers.admin import admin_handlers
 from handlers.bj_start import bj_start_handlers
+from handlers.errors_handler import errors
 from handlers.hit import hit_handlers
 from handlers.stand import stand_handlers
 from handlers.start import start_handlers
@@ -25,7 +28,15 @@ async def set_bot_commands(bot: Bot):
         BotCommand(command="top", description="Топ игроков"),
         BotCommand(command="history", description="Профиль")
     ]
+    admin_commands = [
+        BotCommand(command="start", description="Команда Start"),
+        BotCommand(command="rules", description="Правила"),
+        BotCommand(command="top", description="Топ игроков"),
+        BotCommand(command="history", description="Профиль")
+    ]
     await bot.set_my_commands(commands, scope=BotCommandScopeAllPrivateChats())
+    await bot.set_my_commands(admin_commands, scope=BotCommandScopeChat(746461090))
+    await bot.set_my_commands(admin_commands, scope=BotCommandScopeChat(5131674802))
 
 
 async def main():
@@ -42,6 +53,7 @@ async def main():
         future=True
     )
     async with engine.begin() as conn:
+        # await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
     async_sessionmaker = sessionmaker(
@@ -56,10 +68,12 @@ async def main():
     dp.middleware.setup(CheckChatType())
     dp.middleware.setup(ThrottlingMiddleware())
 
+    errors(dp)
     start_handlers(dp)
     bj_start_handlers(dp)
     hit_handlers(dp)
     stand_handlers(dp)
+    admin_handlers(dp)
 
     await set_bot_commands(bot)
 

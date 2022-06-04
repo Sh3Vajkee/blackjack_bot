@@ -63,7 +63,7 @@ async def bj_stand(c: types.CallbackQuery):
             🔥 Рейтинг: {game.player.rating}      ⬆️<i>(+{game.bet_amount})</i>
             """
             logging.info(
-                f"Game {game_id}|Dealer {dealer_cards}({dealer_points})|Player {game.p_cards}({game.p_points})|player_win 10")
+                f"Game {game_id}|{c.from_user.id}|Dealer {dealer_cards}({dealer_points})|Player {game.p_cards}({game.p_points})|player_win 10")
 
         elif dealer_points == game.p_points:
             game.result = "tie"
@@ -82,7 +82,7 @@ async def bj_stand(c: types.CallbackQuery):
             🔥 Рейтинг: {game.player.rating}
             """
             logging.info(
-                f"Game {game_id}|Dealer {dealer_cards}({dealer_points})|Player {game.p_cards}({game.p_points})|tie")
+                f"Game {game_id}|{c.from_user.id}|Dealer {dealer_cards}({dealer_points})|Player {game.p_cards}({game.p_points})|tie")
 
         else:
             game.result = "player_lose"
@@ -102,7 +102,7 @@ async def bj_stand(c: types.CallbackQuery):
             🔥 Рейтинг: {game.player.rating}      🔻<i>(-{game.bet_amount})</i>
             """
             logging.info(
-                f"Game {game_id}|Dealer {dealer_cards}({dealer_points})|Player {game.p_cards}({game.p_points})|player_lose 10")
+                f"Game {game_id}|{c.from_user.id}|Dealer {dealer_cards}({dealer_points})|Player {game.p_cards}({game.p_points})|player_lose 10")
 
         await ssn.commit()
         await ssn.close()

@@ -58,7 +58,7 @@ async def bj_hit(c: types.CallbackQuery):
 
             await c.message.edit_text(dedent(answer_txt), reply_markup=new_game_kb)
             logging.info(
-                f"Game {game_id}|Dealer {game.d_cards}({game.d_points})|Player {plr_hit_res[1]}({plr_hit_res[0]})|player_lose 10")
+                f"Game {game_id}|{c.from_user.id}|Dealer {game.d_cards}({game.d_points})|Player {plr_hit_res[1]}({plr_hit_res[0]})|player_lose 10")
 
         elif plr_hit_res[0] == 21:
 
@@ -79,7 +79,7 @@ async def bj_hit(c: types.CallbackQuery):
             game.d_cards = dealer_cards
 
             if dealer_points != 21:
-                game.result = "player win"
+                game.result = "player_win"
                 game.player.rating += game.bet_amount
                 await ssn.commit()
 
@@ -99,7 +99,7 @@ async def bj_hit(c: types.CallbackQuery):
 
                 await c.message.edit_text(dedent(answer_txt), reply_markup=new_game_kb)
                 logging.info(
-                    f"Game {game_id}|Dealer {dealer_cards}({dealer_points})|Player {plr_hit_res[1]}({plr_hit_res[0]})|player_win 10")
+                    f"Game {game_id}|{c.from_user.id}|Dealer {dealer_cards}({dealer_points})|Player {plr_hit_res[1]}({plr_hit_res[0]})|player_win 10")
 
             else:
                 game.result = "tie"
@@ -121,7 +121,7 @@ async def bj_hit(c: types.CallbackQuery):
 
                 await c.message.edit_text(dedent(answer_txt), reply_markup=new_game_kb)
                 logging.info(
-                    f"Game {game_id}|Dealer {dealer_cards}({dealer_points})|Player {plr_hit_res[1]}({plr_hit_res[0]})|Tie")
+                    f"Game {game_id}|{c.from_user.id}|Dealer {dealer_cards}({dealer_points})|Player {plr_hit_res[1]}({plr_hit_res[0]})|Tie")
 
         else:
             answer_txt = f"""

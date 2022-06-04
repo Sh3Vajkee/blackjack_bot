@@ -79,7 +79,7 @@ async def new_game(c: types.CallbackQuery):
 
             await c.message.answer(dedent(answer_text), reply_markup=new_game_kb)
             logging.info(
-                f"Game {msg.message_id}|Dealer {selected_cards[0]}_{selected_cards[2]}({dealer_points})|Player {selected_cards[1]}_{selected_cards[3]}({player_points})|player_win 15")
+                f"Game {msg.message_id}|{c.from_user.id}|Dealer {selected_cards[0]}_{selected_cards[2]}({dealer_points})|Player {selected_cards[1]}_{selected_cards[3]}({player_points})|player_win 15")
 
         elif (player_points == dealer_points == 21) or (player_points == dealer_points == 22):
             game = await ssn.merge(BJGame(
@@ -113,7 +113,7 @@ async def new_game(c: types.CallbackQuery):
             """
             await c.message.answer(dedent(answer_text), reply_markup=new_game_kb)
             logging.info(
-                f"Game {msg.message_id}|Dealer Dealer {selected_cards[0]}_{selected_cards[2]}({dealer_points})|Player {selected_cards[1]}_{selected_cards[3]}({player_points})|tie")
+                f"Game {msg.message_id}|{c.from_user.id}|Dealer {selected_cards[0]}_{selected_cards[2]}({dealer_points})|Player {selected_cards[1]}_{selected_cards[3]}({player_points})|tie")
 
         elif (dealer_points >= 21 and player_points < 21) or (dealer_points == 21 and player_points == 22):
             game = await ssn.merge(BJGame(
@@ -149,7 +149,7 @@ async def new_game(c: types.CallbackQuery):
 
             await c.message.answer(dedent(answer_text), reply_markup=new_game_kb)
             logging.info(
-                f"Game {msg.message_id}|Dealer Dealer {selected_cards[0]}_{selected_cards[2]}({dealer_points})|Player {selected_cards[1]}_{selected_cards[3]}({player_points})|player_lose 10")
+                f"Game {msg.message_id}|{c.from_user.id}|Dealer {selected_cards[0]}_{selected_cards[2]}({dealer_points})|Player {selected_cards[1]}_{selected_cards[3]}({player_points})|player_lose 10")
 
         else:
             game = await ssn.merge(BJGame(
