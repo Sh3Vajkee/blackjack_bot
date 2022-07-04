@@ -59,3 +59,5 @@ middlewares/__pycache__/throttling.cpython-310.pyc
 utils/__pycache__/__init__.cpython-310.pyc
 utils/__pycache__/points_count.cpython-310.pyc
 .gitignore
+handlers/blackjack_db.bak
+handlers/bj_db.bak

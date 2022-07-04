@@ -11,6 +11,9 @@ class Player(Base):
     rating = Column(Integer, default=1000)
     total_games = Column(Integer, default=0)
 
+    join_date = Column(BigInteger)
+    last_activity = Column(BigInteger)
+
     bjgames = relationship("BJGame", back_populates="player")
 
 

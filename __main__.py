@@ -32,7 +32,8 @@ async def set_bot_commands(bot: Bot):
         BotCommand(command="start", description="Команда Start"),
         BotCommand(command="rules", description="Правила"),
         BotCommand(command="top", description="Топ игроков"),
-        BotCommand(command="history", description="Профиль")
+        BotCommand(command="history", description="Профиль"),
+        BotCommand(command="admin", description="Админ меню")
     ]
     await bot.set_my_commands(commands, scope=BotCommandScopeAllPrivateChats())
     await bot.set_my_commands(admin_commands, scope=BotCommandScopeChat(746461090))

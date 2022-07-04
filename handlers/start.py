@@ -1,6 +1,8 @@
+import datetime as dt
 import logging
 from textwrap import dedent
 
+import pytz
 from aiogram import Dispatcher, types
 from db.models import BJGame, Player
 from keyboars import new_game_kb
@@ -16,6 +18,7 @@ async def start_cmd(m: types.Message):
     /rules - 📋 правила
     /top - 🏆 топ игроков
     /history - 👤 профиль
+    /donate - поддержать проект
 
     ℹ️ <i>По всем вопросам писать @Tshque</i>
     """
@@ -26,7 +29,9 @@ async def start_cmd(m: types.Message):
     async with db() as ssn:
         plr = await ssn.get(Player, m.from_user.id)
         if not plr:
-            await ssn.merge(Player(plr_id=m.from_user.id))
+            date = int(dt.datetime.now(
+                pytz.timezone("Europe/Moscow")).timestamp())
+            await ssn.merge(Player(plr_id=m.from_user.id, join_date=date, last_activity=date))
             await ssn.commit()
             logging.info(f"New Player with ID: {m.from_user.id}")
         await ssn.close()
@@ -113,7 +118,7 @@ async def top_cmd(m: types.Message):
 
     txt = "🏆 <b>Топ игроков:</b>\n\n" + \
         "\n".join(
-            players) + f"\n\n<b>. . .</b>\n\n{plr_medal} {plr_place}. Ваш рейтинг - <b>{plr_points}</b>\n\n\nℹ️ <i>По всем вопросам писать @Tshque</i>"
+            players) + f"\n\n<b>. . .</b>\n\n{plr_medal} {plr_place}. Ваш рейтинг - <b>{plr_points}</b>\n\n\nℹ️ <i>По всем вопросам писать @Tshque</i>\n/donate - поддержать проект"
 
     await m.answer(txt, reply_markup=new_game_kb)
 
@@ -166,8 +171,32 @@ async def games_history(m: types.Message):
     else:
         txt = "🥺 Вы еще не сыграли ниодной игры"
 
-    await m.answer(header_txt + txt + "\n\n\nℹ️ <i>По всем вопросам писать @Tshque</i>",
+    await m.answer(header_txt + txt + "\n\n\nℹ️ <i>По всем вопросам писать @Tshque</i>\n/donate - поддержать проект",
                    reply_markup=new_game_kb)
+
+
+@rate_limit(1)
+async def supp_project(m: types.Message):
+    txt = f"""
+    👍 Поддержи проект!
+
+    BTC:
+    <code>1N9vLNJUmdmrpQtL8u1h8u5L7hkRvLWuSk</code>
+
+    ETH:
+    <code>2e7b75c52bacd1493ffc454c13630d5858274b59</code>
+    
+    LTC:
+    <code>Lh9gaup7WqnVUcRhDrjxQMsKmb2C2kHQ6D</code>
+
+    DOGE:
+    <code>DT2QTDbdM8kGQdLuSgur3ZYaMqW9ScozzL</code>
+
+    DASH:
+    <code>Xsu56hf48HKYP3m3PPJfGNkPZmYCHwEiJJ</code>
+    """
+
+    await m.answer(dedent(txt))
 
 
 def start_handlers(dp: Dispatcher):
@@ -175,3 +204,4 @@ def start_handlers(dp: Dispatcher):
     dp.register_message_handler(rules_cmd, commands="rules")
     dp.register_message_handler(top_cmd, commands="top")
     dp.register_message_handler(games_history, commands="history")
+    dp.register_message_handler(supp_project, commands="donate")

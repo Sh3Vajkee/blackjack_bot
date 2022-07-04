@@ -1,8 +1,10 @@
 import asyncio
+import datetime as dt
 import logging
 import random
 from textwrap import dedent
 
+import pytz
 from aiogram import Dispatcher, types
 from db.models import BJGame, Player
 from keyboars import get_bj_kb, new_game_kb
@@ -15,7 +17,8 @@ from utils.points_count import first_count_points
 async def new_game(c: types.CallbackQuery):
     await c.answer()
     await c.message.edit_reply_markup()
-
+    date = int(dt.datetime.now(
+        pytz.timezone("Europe/Moscow")).timestamp())
     db = c.bot.get("db")
 
     bet_amount = 10
@@ -43,6 +46,7 @@ async def new_game(c: types.CallbackQuery):
     async with db() as ssn:
         player: Player = await ssn.get(Player, c.from_user.id)
         player.total_games += 1
+        player.last_activity = date
 
         if (player_points >= 21 and dealer_points < 21) or (player_points == 21 and dealer_points == 22):
             game = await ssn.merge(BJGame(
